@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterobacterias ID</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: white;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background 0.3s;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .main-content {
+      padding: 20px;
+    }
+
+    .genus-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 4px solid #667eea;
+    }
+
+    .genus-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .genus-card h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .genus-card p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .species-list {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .species-item {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .species-item:last-child {
+      border-bottom: none;
+    }
+
+    .species-item:hover {
+      background: #f8f9ff;
+    }
+
+    .species-name {
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+
+    .test-results {
+      background: #f8f9ff;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .test-item {
+      background: white;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .test-name {
+      font-weight: bold;
+      font-size: 12px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .test-result {
+      font-size: 18px;
+      font-weight: bold;
+      padding: 5px;
+      border-radius: 4px;
+    }
+
+    .positive {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .negative {
+      background: #f44336;
+      color: white;
+    }
+
+    .variable {
+      background: #FF9800;
+      color: white;
+    }
+
+    .mostly-positive {
+      background: #8BC34A;
+      color: white;
+    }
+
+    .mostly-negative {
+      background: #FF5722;
+      color: white;
+    }
+
+    .legend {
+      background: #f0f0f0;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 20px;
+      font-size: 12px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .legend-color {
+      width: 15px;
+      height: 15px;
+      border-radius: 3px;
+      margin-right: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .floating-action {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Pantalla Principal -->
+    <div id="home-screen">
+      <div class="header">
+        <h1>🦠 Enterobacterias ID</h1>
+        <p>Identificación de Enterobacterias</p>
+      </div>
+
+      <div class="main-content">
+        <input type="text" class="search-box" placeholder="🔍 Buscar género..." id="searchBox">
+
+        <div class="genus-card" onclick="showGroup('principales')">
+          <h3>Géneros Principales</h3>
+          <p>Escherichia, Shigella, Citrobacter, Salmonella</p>
+        </div>
+
+        <div class="genus-card" onclick="showGroup('kes')">
+          <h3>Grupo KES</h3>
+          <p>Klebsiella, Enterobacter, Serratia</p>
+        </div>
+
+        <div class="genus-card" onclick="showGroup('proteus')">
+          <h3>Grupo Proteus</h3>
+          <p>Proteus, Providencia, Morganella</p>
+        </div>
+
+        <div class="genus-card" onclick="showGroup('miscellaneous')">
+          <h3>Género Miscellaneous</h3>
+          <p>Yersinia, Hafnia</p>
+        </div>
+
+        <div class="genus-card" onclick="showGroup('raramente')">
+          <h3>Géneros Raramente Aislados</h3>
+          <p>Kluyvera, Cedecea, Edwardsiella, y otros</p>
+        </div>
+
+        <div class="genus-card" onclick="showGroup('no-clinicos')">
+          <h3>Géneros No Clínicos</h3>
+          <p>Buttiauxella, Obesumbacterium</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pantalla de Grupo -->
+    <div id="group-screen" class="hidden">
+      <div class="header">
+        <button class="back-btn" onclick="showHome()">←</button>
+        <h1 id="group-title">Grupo</h1>
+        <p>Selecciona un género para ver las pruebas</p>
+      </div>
+
+      <div class="main-content">
+        <div id="species-container"></div>
+      </div>
+    </div>
+
+    <!-- Pantalla de Detalles -->
+    <div id="detail-screen" class="hidden">
+      <div class="header">
+        <button class="back-btn" onclick="showGroup(currentGroup)">←</button>
+        <h1 id="species-title">Especie</h1>
+        <p>Pruebas bioquímicas</p>
+      </div>
+
+      <div class="main-content">
+        <div id="test-container"></div>
+
+        <div class="legend">
+          <h4>Leyenda:</h4>
+          <div class="legend-item">
+            <div class="legend-color positive"></div>
+            <span>+ Positivo (≥90%)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color mostly-positive"></div>
+            <span>(+) Mayoría positiva (75-85%)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color variable"></div>
+            <span>V Variable (26-74%)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color mostly-negative"></div>
+            <span>(-) Mayoría negativa (11-25%)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color negative"></div>
+            <span>- Negativo (≤10%)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="floating-action" onclick="showLegend()">?</button>
+  </div>
+
+  <script>
+    // Datos de las enterobacterias
+    const enterobacteriaData = {
+      principales: {
+        title: "Géneros Principales",
+        species: {
+          'Escherichia': {
+            IND: '+',
+            MR: '+',
+            VP: '-',
+            CIT: '-',
+            LYS: '+',
+            ARG: 'V',
+            ORN: 'V',
+            H2S: '-',
+            URE: '-',
+            PHE: '-',
+            MOT: '+',
+            GAS: '+',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '+',
+            SUC: 'V',
+            MAN: '+',
+            DUL: 'V',
+            SAL: 'V',
+            ADO: '-',
+            INO: '-',
+            SOR: '+',
+            ARA: '+',
+            RAFF: 'V',
+            RHAM: '(+)',
+            MALT: '+',
+            XYL: '+',
+            TRE: '+'
+          },
+          'Shigella': {
+            IND: '(-)',
+            MR: '+',
+            VP: '-',
+            CIT: '-',
+            LYS: '-',
+            ARG: '(-)',
+            ORN: 'V',
+            H2S: '-',
+            URE: '-',
+            PHE: '-',
+            MOT: '-',
+            GAS: '-',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '-',
+            SUC: '-',
+            MAN: '+',
+            DUL: '-',
+            SAL: '-',
+            ADO: '-',
+            INO: '-',
+            SOR: '(-)',
+            ARA: '(+)',
+            RAFF: 'V',
+            RHAM: 'V',
+            MALT: 'V',
+            XYL: '-',
+            TRE: '(+)'
+          },
+          'Citrobacter': {
+            IND: 'V',
+            MR: '+',
+            VP: '-',
+            CIT: '+',
+            LYS: '-',
+            ARG: 'V',
+            ORN: 'V',
+            H2S: '+',
+            URE: '(+)',
+            PHE: '-',
+            MOT: '+',
+            GAS: '+',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: 'V',
+            SUC: 'V',
+            MAN: '+',
+            DUL: 'V',
+            SAL: '-',
+            ADO: 'V',
+            INO: '-',
+            SOR: '+',
+            ARA: '+',
+            RAFF: 'V',
+            RHAM: '+',
+            MALT: '+',
+            XYL: '+',
+            TRE: '+'
+          },
+          'Salmonella': {
+            IND: '-',
+            MR: '+',
+            VP: '-',
+            CIT: '+',
+            LYS: '+',
+            ARG: '(+)',
+            ORN: '+',
+            H2S: '+',
+            URE: '-',
+            PHE: '-',
+            MOT: '+',
+            GAS: '+',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '-',
+            SUC: '-',
+            MAN: '+',
+            DUL: '+',
+            SAL: '-',
+            ADO: '-',
+            INO: 'V',
+            SOR: '+',
+            ARA: '+',
+            RAFF: '-',
+            RHAM: '+',
+            MALT: '+',
+            XYL: '+',
+            TRE: '+'
+          }
+        }
+      },
+      kes: {
+        title: "Grupo KES",
+        species: {
+          'Klebsiella': {
+            IND: '(-)',
+            MR: '(-)',
+            VP: '+',
+            CIT: '+',
+            LYS: '+',
+            ARG: '-',
+            ORN: '-',
+            H2S: '-',
+            URE: '+',
+            PHE: '-',
+            MOT: '-',
+            GAS: '+',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '+',
+            SUC: '+',
+            MAN: '+',
+            DUL: 'V',
+            SAL: '+',
+            ADO: '+',
+            INO: '+',
+            SOR: '+',
+            ARA: '+',
+            RAFF: '+',
+            RHAM: '+',
+            MALT: '+',
+            XYL: '+',
+            TRE: '+'
+          },
+          'Enterobacter': {
+            IND: '-',
+            MR: '-',
+            VP: '+',
+            CIT: '+',
+            LYS: 'V',
+            ARG: '(+)',
+            ORN: '+',
+            H2S: '-',
+            URE: 'V',
+            PHE: '-',
+            MOT: '+',
+            GAS: '+',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '+',
+            SUC: '+',
+            MAN: '+',
+            DUL: '(-)',
+            SAL: '(+)',
+            ADO: 'V',
+            INO: 'V',
+            SOR: '+',
+            ARA: '+',
+            RAFF: '+',
+            RHAM: '+',
+            MALT: '+',
+            XYL: '+',
+            TRE: '+'
+          },
+          'Serratia': {
+            IND: '-',
+            MR: '(-)',
+            VP: '+',
+            CIT: '+',
+            LYS: '+',
+            ARG: '-',
+            ORN: '+',
+            H2S: '-',
+            URE: '(-)',
+            PHE: '-',
+            MOT: '+',
+            GAS: 'V',
+            DNA: '+',
+            GEL: '+',
+            LIP: '+',
+            LAC: '-',
+            SUC: '+',
+            MAN: '+',
+            DUL: '-',
+            SAL: '+',
+            ADO: 'V',
+            INO: '(+)',
+            SOR: '+',
+            ARA: '-',
+            RAFF: '-',
+            RHAM: '-',
+            MALT: '+',
+            XYL: '-',
+            TRE: '+'
+          }
+        }
+      },
+      proteus: {
+        title: "Grupo Proteus",
+        species: {
+          'Proteus': {
+            IND: 'V',
+            MR: '+',
+            VP: '(-)',
+            CIT: 'V',
+            LYS: '-',
+            ARG: '-',
+            ORN: 'V',
+            H2S: '+',
+            URE: '+',
+            PHE: '+',
+            MOT: '+',
+            GAS: '+',
+            DNA: 'V',
+            GEL: '+',
+            LIP: '(+)',
+            LAC: '-',
+            SUC: 'V',
+            MAN: '-',
+            DUL: '-',
+            SAL: 'V',
+            ADO: '-',
+            INO: '-',
+            SOR: '-',
+            ARA: '-',
+            RAFF: '-',
+            RHAM: '-',
+            MALT: 'V',
+            XYL: 'V',
+            TRE: 'V'
+          },
+          'Providencia': {
+            IND: '+',
+            MR: '+',
+            VP: '-',
+            CIT: '+',
+            LYS: '-',
+            ARG: '-',
+            ORN: '-',
+            H2S: '-',
+            URE: 'V',
+            PHE: '+',
+            MOT: '+',
+            GAS: 'V',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '-',
+            SUC: 'V',
+            MAN: 'V',
+            DUL: '-',
+            SAL: 'V',
+            ADO: 'V',
+            INO: 'V',
+            SOR: '-',
+            ARA: '-',
+            RAFF: '-',
+            RHAM: 'V',
+            MALT: '-',
+            XYL: '-',
+            TRE: 'V'
+          },
+          'Morganella': {
+            IND: '+',
+            MR: '+',
+            VP: '-',
+            CIT: '-',
+            LYS: '-',
+            ARG: '-',
+            ORN: '+',
+            H2S: '-',
+            URE: '+',
+            PHE: '+',
+            MOT: '+',
+            GAS: '(+)',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '-',
+            SUC: '-',
+            MAN: '-',
+            DUL: '-',
+            SAL: '-',
+            ADO: '-',
+            INO: '-',
+            SOR: '-',
+            ARA: '-',
+            RAFF: '-',
+            RHAM: '-',
+            MALT: '-',
+            XYL: '-',
+            TRE: '(-)'
+          }
+        }
+      },
+      miscellaneous: {
+        title: "Género Miscellaneous",
+        species: {
+          'Yersinia': {
+            IND: 'V',
+            MR: '+',
+            VP: '-',
+            CIT: '-',
+            LYS: '-',
+            ARG: '-',
+            ORN: 'V',
+            H2S: '-',
+            URE: '(+)',
+            PHE: '-',
+            MOT: '-',
+            GAS: '-',
+            DNA: '-',
+            GEL: '-',
+            LIP: 'V',
+            LAC: '-',
+            SUC: '+',
+            MAN: '+',
+            DUL: '-',
+            SAL: 'V',
+            ADO: '-',
+            INO: 'V',
+            SOR: '+',
+            ARA: '+',
+            RAFF: '-',
+            RHAM: '-',
+            MALT: '(+)',
+            XYL: '(+)',
+            TRE: '+'
+          },
+          'Hafnia': {
+            IND: '-',
+            MR: 'V',
+            VP: '(+)',
+            CIT: '-',
+            LYS: '+',
+            ARG: '-',
+            ORN: '+',
+            H2S: '-',
+            URE: '-',
+            PHE: '-',
+            MOT: '+',
+            GAS: '+',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '-',
+            SUC: '-',
+            MAN: '+',
+            DUL: '-',
+            SAL: '(-)',
+            ADO: '-',
+            INO: '-',
+            SOR: '-',
+            ARA: '+',
+            RAFF: '-',
+            RHAM: '+',
+            MALT: '+',
+            XYL: '+',
+            TRE: '+'
+          }
+        }
+      },
+      raramente: {
+        title: "Géneros Raramente Aislados",
+        species: {
+          'Kluyvera': {
+            IND: '(+)',
+            MR: '+',
+            VP: '-',
+            CIT: '+',
+            LYS: '+',
+            ARG: '-',
+            ORN: '+',
+            H2S: '-',
+            URE: '-',
+            PHE: '-',
+            MOT: '+',
+            GAS: '+',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '+',
+            SUC: '+',
+            MAN: '+',
+            DUL: '(-)',
+            SAL: '+',
+            ADO: '-',
+            INO: '-',
+            SOR: 'V',
+            ARA: '+',
+            RAFF: '+',
+            RHAM: '+',
+            MALT: '+',
+            XYL: '+',
+            TRE: '+'
+          },
+          'Cedecea': {
+            IND: '-',
+            MR: '+',
+            VP: 'V',
+            CIT: '+',
+            LYS: '-',
+            ARG: 'V',
+            ORN: 'V',
+            H2S: '-',
+            URE: '-',
+            PHE: '-',
+            MOT: '+',
+            GAS: '(+)',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '(-)',
+            SUC: '(+)',
+            MAN: '+',
+            DUL: '-',
+            SAL: '+',
+            ADO: '-',
+            INO: '-',
+            SOR: '-',
+            ARA: '-',
+            RAFF: '-',
+            RHAM: '-',
+            MALT: '+',
+            XYL: '(+)',
+            TRE: '+'
+          },
+          'Edwardsiella': {
+            IND: '+',
+            MR: '+',
+            VP: '-',
+            CIT: '-',
+            LYS: '+',
+            ARG: '-',
+            ORN: '+',
+            H2S: '+',
+            URE: '-',
+            PHE: '-',
+            MOT: '+',
+            GAS: '+',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '-',
+            SUC: '-',
+            MAN: '-',
+            DUL: '-',
+            SAL: '-',
+            ADO: '-',
+            INO: '-',
+            SOR: '-',
+            ARA: '-',
+            RAFF: '-',
+            RHAM: '-',
+            MALT: '+',
+            XYL: '-',
+            TRE: '-'
+          },
+          'Ewingella': {
+            IND: '-',
+            MR: '(+)',
+            VP: '+',
+            CIT: '+',
+            LYS: '-',
+            ARG: '-',
+            ORN: '-',
+            H2S: '-',
+            URE: '-',
+            PHE: '-',
+            MOT: 'V',
+            GAS: '-',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: 'V',
+            SUC: '-',
+            MAN: '+',
+            DUL: '-',
+            SAL: '-',
+            ADO: '-',
+            INO: '-',
+            SOR: '-',
+            ARA: '-',
+            RAFF: '-',
+            RHAM: '(-)',
+            MALT: '(-)',
+            XYL: '(-)',
+            TRE: '+'
+          },
+          'Rahnella': {
+            IND: '-',
+            MR: '(+)',
+            VP: '+',
+            CIT: '+',
+            LYS: '-',
+            ARG: '-',
+            ORN: '-',
+            H2S: '-',
+            URE: '-',
+            PHE: '+',
+            MOT: '-',
+            GAS: '+',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '+',
+            SUC: '+',
+            MAN: '+',
+            DUL: '(-)',
+            SAL: '+',
+            ADO: '-',
+            INO: '-',
+            SOR: 'V',
+            ARA: '+',
+            RAFF: '+',
+            RHAM: '(+)',
+            MALT: '(+)',
+            XYL: '(+)',
+            TRE: '+'
+          },
+          'Tatumella': {
+            IND: '-',
+            MR: '-',
+            VP: '-',
+            CIT: '-',
+            LYS: '-',
+            ARG: '-',
+            ORN: '-',
+            H2S: '-',
+            URE: '-',
+            PHE: '+',
+            MOT: '-',
+            GAS: '-',
+            DNA: 'V',
+            GEL: '-',
+            LIP: '-',
+            LAC: '-',
+            SUC: '+',
+            MAN: '-',
+            DUL: '-',
+            SAL: 'V',
+            ADO: '-',
+            INO: '-',
+            SOR: '-',
+            ARA: '-',
+            RAFF: '(-)',
+            RHAM: '-',
+            MALT: '-',
+            XYL: '-',
+            TRE: '+'
+          },
+          'Budvicia': {
+            IND: '-',
+            MR: '+',
+            VP: '-',
+            CIT: '-',
+            LYS: '-',
+            ARG: '-',
+            ORN: '-',
+            H2S: '(+)',
+            URE: 'V',
+            PHE: '-',
+            MOT: 'V',
+            GAS: 'V',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '+',
+            SUC: '-',
+            MAN: 'V',
+            DUL: '-',
+            SAL: '-',
+            ADO: '-',
+            INO: '-',
+            SOR: '-',
+            ARA: 'V',
+            RAFF: '-',
+            RHAM: '+',
+            MALT: '-',
+            XYL: '+',
+            TRE: '-'
+          },
+          'Koserella/Yokenella': {
+            IND: '-',
+            MR: '+',
+            VP: '-',
+            CIT: '-',
+            LYS: '-',
+            ARG: '+',
+            ORN: '+',
+            H2S: '-',
+            URE: '-',
+            PHE: '-',
+            MOT: '+',
+            GAS: '+',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '-',
+            SUC: '+',
+            MAN: '+',
+            DUL: '+',
+            SAL: '-',
+            ADO: '-',
+            INO: '-',
+            SOR: '-',
+            ARA: '+',
+            RAFF: '(-)',
+            RHAM: '+',
+            MALT: '+',
+            XYL: '+',
+            TRE: '+'
+          },
+          'Leclercia': {
+            IND: '+',
+            MR: '-',
+            VP: '-',
+            CIT: '-',
+            LYS: '-',
+            ARG: '-',
+            ORN: 'V',
+            H2S: '-',
+            URE: 'V',
+            PHE: '-',
+            MOT: 'V',
+            GAS: '+',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '+',
+            SUC: 'V',
+            MAN: '+',
+            DUL: '(+)',
+            SAL: '+',
+            ADO: '+',
+            INO: '-',
+            SOR: '-',
+            ARA: '+',
+            RAFF: 'V',
+            RHAM: '+',
+            MALT: '+',
+            XYL: '+',
+            TRE: '+'
+          },
+          'Leminorella': {
+            IND: '-',
+            MR: 'α',
+            VP: '-',
+            CIT: 'α',
+            LYS: '-',
+            ARG: '-',
+            ORN: '-',
+            H2S: '+',
+            URE: '-',
+            PHE: '-',
+            MOT: '-',
+            GAS: 'α',
+            DNA: '-',
+            GEL: '-',
+            LIP: '-',
+            LAC: '-',
+            SUC: '-',
+            MAN: '-',
+            DUL: 'β',
+            SAL: '-',
+            ADO: '-',
+            INO: '-',
+            SOR: '-',
+            ARA: '+',
+            RAFF: '-',
+            RHAM: '-',
+            MALT: '-',
+            XYL: '+',
+            TRE: '-'
+          },
+          'Xenorhabdus': {
+            IND: 'V',
+            MR: '-',
+            VP: '-',
+            CIT: 'V',
+            LYS: '-',
+            ARG: '-',
+            ORN: '-',
+            H2S: '-',
+            URE: '(-)',
+            PHE: '-',
+            MOT: '+',
+            GAS: '-',
+            DNA: '-',
+            GEL: 'V',
+            LIP: '-',
+            LAC: '-',
+            SUC: '-',
+            MAN: '-',
+            DUL: '-',
+            SAL: '-',
+            ADO: '-',
+            INO: '-',
+            SOR: '-',
+            ARA: '-',
+            RAFF: '-',
+            RHAM: '-',
+            MALT: '(-)',
+            XYL: '-',
+            TRE: '-'
+    }
+    }
+    },
+    'no-clinicos': {
+      title: "Géneros No Clínicos",
+      species: {
+        'Buttiauxella': {
+          IND: '-',
+          MR: '+',
+          VP: '-',
+          CIT: '+',
+          LYS: '-',
+          ARG: '-',
+          ORN: '+',
+          H2S: '-',
+          URE: '-',
+          PHE: '-',
+          MOT: '+',
+          GAS: '+',
+          DNA: '-',
+          GEL: '-',
+          LIP: '-',
+          LAC: '+',
+          SUC: '-',
+          MAN: '+',
+          DUL: '-',
+          SAL: '+',
+          ADO: '-',
+          INO: '-',
+          SOR: '-',
+          ARA: '+',
+          RAFF: '+',
+          RHAM: '+',
+          MALT: '+',
+          XYL: '+',
+          TRE: '+'
+        },
+        'Obesumbacterium': {
+          IND: '-',
+          MR: '(-)',
+          VP: '-',
+          CIT: '-',
+          LYS: '+',
+          ARG: '-',
+          ORN: '+',
+          H2S: '-',
+          URE: '-',
+          PHE: '-',
+          MOT: '-',
+          GAS: '-',
+          DNA: '-',
+          GEL: '-',
+          LIP: '-',
+          LAC: '-',
+          SUC: '-',
+          MAN: '-',
+          DUL: '-',
+          SAL: '-',
+          ADO: '-',
+          INO: '-',
+          SOR: '-',
+          ARA: '-',
+          RAFF: '-',
+          RHAM: '(-)',
+          MALT: 'V',
+          XYL: '(-)',
+          TRE: '(+)'
+        }
+      }
+    }
+    };
+    // Mapeo de abreviaciones a nombres completos
+    const testNames = {
+      IND: 'Indol',
+      MR: 'Rojo Metilo',
+      VP: 'Voges-Proskauer',
+      CIT: 'Citrato',
+      LYS: 'Lisina',
+      ARG: 'Arginina',
+      ORN: 'Ornitina',
+      H2S: 'Sulfuro H₂S',
+      URE: 'Urea',
+      PHE: 'Fenilalanina',
+      MOT: 'Motilidad',
+      GAS: 'Gas Glucosa',
+      DNA: 'DNAsa',
+      GEL: 'Gelatina',
+      LIP: 'Lipasa',
+      LAC: 'Lactosa',
+      SUC: 'Sacarosa',
+      MAN: 'Manitol',
+      DUL: 'Dulcitol',
+      SAL: 'Salicina',
+      ADO: 'Adonitol',
+      INO: 'Inositol',
+      SOR: 'Sorbitol',
+      ARA: 'Arabinosa',
+      RAFF: 'Rafinosa',
+      RHAM: 'Ramnosa',
+      MALT: 'Maltosa',
+      XYL: 'Xilosa',
+      TRE: 'Trealosa'
+    };
+    let currentGroup = '';
+
+    function showHome() {
+      document.getElementById('home-screen').classList.remove('hidden');
+      document.getElementById('group-screen').classList.add('hidden');
+      document.getElementById('detail-screen').classList.add('hidden');
+    }
+
+    function showGroup(groupKey) {
+      currentGroup = groupKey;
+      const group = enterobacteriaData[groupKey];
+      document.getElementById('home-screen').classList.add('hidden');
+      document.getElementById('group-screen').classList.remove('hidden');
+      document.getElementById('detail-screen').classList.add('hidden');
+      document.getElementById('group-title').textContent = group.title;
+      const container = document.getElementById('species-container');
+      container.innerHTML = '';
+      Object.keys(group.species).forEach(species => {
+        const speciesDiv = document.createElement('div');
+        speciesDiv.className = 'species-list';
+        speciesDiv.innerHTML = `
+                    <div class="species-item" onclick="showSpecies('${groupKey}', '${species}')">
+                        <div class="species-name">${species}</div>
+                        <div style="font-size: 12px; color: #666;">Toca para ver pruebas bioquímicas</div>
+                    </div>
+                `;
+        container.appendChild(speciesDiv);
+      });
+    }
+
+    function showSpecies(groupKey, speciesName) {
+      document.getElementById('group-screen').classList.add('hidden');
+      document.getElementById('detail-screen').classList.remove('hidden');
+      document.getElementById('species-title').textContent = speciesName;
+      const species = enterobacteriaData[groupKey].species[speciesName];
+      const container = document.getElementById('test-container');
+      container.innerHTML = `
+                <div class="test-results">
+                    <h3>Pruebas Bioquímicas</h3>
+                    <div class="test-grid" id="test-grid"></div>
+                </div>
+            `;
+      const testGrid = document.getElementById('test-grid');
+      Object.keys(species).forEach(testKey => {
+        const testDiv = document.createElement('div');
+        testDiv.className = 'test-item';
+        const result = species[testKey];
+        const resultClass = getResultClass(result);
+        testDiv.innerHTML = `
+                    <div class="test-name">${testNames[testKey] || testKey}</div>
+                    <div class="test-result ${resultClass}">${result}</div>
+                `;
+        testGrid.appendChild(testDiv);
+      });
+    }
+
+    function getResultClass(result) {
+      switch (result) {
+        case '+':
+          return 'positive';
+        case '-':
+          return 'negative';
+        case 'V':
+          return 'variable';
+        case '(+)':
+          return 'mostly-positive';
+        case '(-)':
+          return 'mostly-negative';
+        default:
+          return 'variable';
+      }
+    }
+
+    function showLegend() {
+      alert(`Leyenda de Resultados:
+            
++ : Positivo (≥90%)
+(+) : Mayoría positiva (75-85%)
+V : Variable (26-74%)
+(-) : Mayoría negativa (11-25%)
+- : Negativo (≤10%)
+
+Pruebas IMViC: Indol, Rojo Metilo, Voges-Proskauer, Citrato
+Descarboxilasas: Lisina, Arginina, Ornitina
+Enzimas: DNAsa, Gelatina, Lipasa
+Fermentación: Lactosa, Sacarosa, Manitol, etc.`);
+    }
+    // Funcionalidad de búsqueda
+    document.getElementById('searchBox').addEventListener('input', function(e) {
+      const searchTerm = e.target.value.toLowerCase();
+      const cards = document.querySelectorAll('.genus-card');
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+    // Inicializar en pantalla principal
+    showHome();
+  </script>
+</body>
+
+</html>
