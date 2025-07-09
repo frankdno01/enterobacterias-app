@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CEA-BacterScan - Identificación Bacteriana</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+  /* Reset y base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; padding: 24px;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    color: #1e293b;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 25px 40px rgba(59, 130, 246, 0.3);
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  header {
+    background: #2563eb;
+    color: white;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    user-select: none;
+  }
+  header .title {
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+  }
+  header .subtitle {
+    font-weight: 400;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+  #btnRestart {
+    background: rgba(255 255 255 / 0.2);
+    border: none;
+    color: white;
+    font-size: 1.3rem;
+    padding: 8px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 12px rgba(255 255 255 / 0.6);
+  }
+  #btnRestart:hover {
+    background: rgba(255 255 255 / 0.4);
+  }
+
+  .progress {
+    padding: 14px 24px;
+    background: #f1f5f9;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #2563eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .progress-bar {
+    position: relative;
+    height: 12px;
+    background: #cbd5e1;
+    border-radius: 9999px;
+    flex-grow: 1;
+    margin-left: 16px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.1);
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2563eb, #8b5cf6);
+    width: 0;
+    border-radius: 9999px;
+    transition: width 0.5s ease;
+  }
+
+  main.content {
+    padding: 32px 24px;
+    background: white;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 320px;
+    user-select: none;
+  }
+
+  /* Pregunta */
+  .question {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #334155;
+    line-height: 1.4;
+  }
+
+  /* Botones de opciones */
+  .options {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .option-btn {
+    background: #e0e7ff;
+    border: none;
+    padding: 18px 0;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #3730a3;
+    box-shadow: 0 4px 8px rgb(99 102 241 / 0.3);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    user-select: none;
+  }
+  .option-btn:hover {
+    background: #c7d2fe;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgb(99 102 241 / 0.5);
+  }
+  .option-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 6px rgb(99 102 241 / 0.4);
+  }
+
+  /* Boton volver atrás */
+  #btnBack {
+    margin-top: 32px;
+    background: transparent;
+    color: #64748b;
+    font-weight: 600;
+    border: 2px solid #64748b;
+    border-radius: 14px;
+    padding: 10px 18px;
+    cursor: pointer;
+    width: fit-content;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  #btnBack:hover {
+    background-color: #64748b;
+    color: white;
+  }
+
+  /* Resultado */
+  .result-container {
+    text-align: center;
+    width: 100%;
+  }
+  .result-icon {
+    font-size: 4.5rem;
+    color: #22c55e;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 0 5px #22c55e);
+    user-select: none;
+  }
+  .result-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #166534;
+    margin-bottom: 8px;
+  }
+  .result-subtitle {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #4ade80;
+    margin-bottom: 24px;
+  }
+  .result-list {
+    background: #dcfce7;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    font-weight: 600;
+    color: #15803d;
+    text-align: left;
+    user-select: text;
+  }
+  .result-list ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+  .result-characteristics {
+    background: #e0e7ff;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 40px;
+    color: #334155;
+    font-weight: 500;
+    font-size: 1rem;
+    user-select: text;
+  }
+  .result-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: #2563eb;
+    border: none;
+    padding: 14px 26px;
+    border-radius: 16px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 12px 20px rgb(37 99 235 / 0.45);
+    transition: background-color 0.3s ease;
+    user-select: none;
+  }
+  .btn-primary:hover {
+    background: #1d4ed8;
+  }
+  .btn-secondary {
+    background: transparent;
+    border: 2px solid #64748b;
+    padding: 14px 26px;
+    border-radius: 16px;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .btn-secondary:hover {
+    background-color: #64748b;
+    color: white;
+  }
+
+  /* Historial */
+  .history {
+    background: #f1f5f9;
+    padding: 20px;
+    font-size: 0.85rem;
+    color: #475569;
+    max-height: 160px;
+    overflow-y: auto;
+    border-top: 1px solid #cbd5e1;
+    user-select: text;
+  }
+  .history h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #334155;
+  }
+  .history-item {
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .history-question {
+    font-weight: 600;
+  }
+  .history-answer {
+    color: #2563eb;
+    margin-left: 6px;
+  }
+
+  /* Icon arrow for back buttons */
+  .arrow-left {
+    display: inline-block;
+    border: solid currentColor;
+    border-width: 0 3px 3px 0;
+    padding: 3px;
+    transform: rotate(135deg);
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 480px) {
+    body {
+      padding: 12px;
+    }
+    .container {
+      width: 100%;
+      box-shadow: none;
+      border-radius: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="app" role="main" aria-label="Aplicación de identificación bacteriana">
+  <header>
+    <div>
+      <div class="title">CEA-BacterScan</div>
+      <div class="subtitle">Identificación Bacteriana</div>
+    </div>
+    <button id="btnRestart" aria-label="Reiniciar identificación" title="Reiniciar">&#x21bb;</button>
+  </header>
+
+  <div class="progress" aria-label="Barra de progreso de preguntas respondidas">
+    <span>Progreso</span>
+    <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0" tabindex="0">
+      <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+    <span id="progressText" aria-live="polite" style="margin-left:8px; font-weight: 700; color:#2563eb;">0/15</span>
+  </div>
+
+  <main class="content" id="contentArea" tabindex="0" aria-live="polite">
+    <!-- Aquí se carga la pregunta o resultado -->
+  </main>
+
+  <section class="history" id="historySection" aria-label="Historial de respuestas" hidden>
+    <h3>Historial de Respuestas:</h3>
+    <div id="historyList"></div>
+  </section>
+</div>
+
+<script>
+  // Árbol de decisión completo (copiado íntegro del usuario)
+  const decisionTree = {
+            start: {
+                question: "¿El microorganismo reduce H2S?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_positive" },
+                    { text: "No", next: "h2s_negative" }
+                ]
+            },
+            h2s_positive: {
+                question: "¿Produce ureasa?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_pos_urease_pos" },
+                    { text: "No", next: "h2s_pos_urease_neg" }
+                ]
+            },
+            h2s_negative: {
+                question: "¿Produce ureasa?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_neg_urease_pos" },
+                    { text: "No", next: "h2s_neg_urease_neg" }
+                ]
+            },
+            h2s_pos_urease_pos: {
+                question: "¿Sintetiza indol?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_1" },
+                    { text: "No", next: "h2s_pos_urease_pos_indol_neg" }
+                ]
+            },
+            h2s_pos_urease_neg: {
+                question: "¿Citrato?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_pos_urease_neg_citrato_pos" },
+                    { text: "No", next: "h2s_pos_urease_neg_citrato_neg" }
+                ]
+            },
+            h2s_pos_urease_neg_citrato_pos: {
+                question: "¿Lactosa?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_4" },
+                    { text: "No", next: "h2s_pos_urease_neg_citrato_pos_lactosa_neg" }
+                ]
+            },
+            h2s_pos_urease_neg_citrato_pos_lactosa_neg: {
+                question: "¿Lisina?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_5" },
+                    { text: "No", next: "result_6" }
+                ]
+            },
+            h2s_pos_urease_neg_citrato_neg: {
+                question: "¿Movilidad?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_pos_urease_neg_citrato_neg_mov_pos" },
+                    { text: "No", next: "result_7" }
+                ]
+            },
+            h2s_pos_urease_neg_citrato_neg_mov_pos: {
+                question: "¿Indol?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_8" },
+                    { text: "No", next: "result_9" }
+                ]
+            },
+            h2s_pos_urease_pos_indol_neg: {
+                question: "¿Degrada Fenilalanina?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_2" },
+                    { text: "No", next: "result_3" }
+                ]
+            },
+            h2s_neg_urease_pos: {
+                question: "¿Citrato?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_neg_urease_pos_citrato_pos" },
+                    { text: "No", next: "h2s_neg_urease_pos_citrato_neg" }
+                ]
+            },
+            h2s_neg_urease_pos_citrato_pos: {
+                question: "¿Lactosa?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_neg_urease_pos_citrato_pos_lactosa_pos" },
+                    { text: "No", next: "result_10" }
+                ]
+            },
+            h2s_neg_urease_pos_citrato_pos_lactosa_pos: {
+                question: "¿Movilidad?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_neg_urease_pos_citrato_pos_lactosa_pos_mov_pos" },
+                    { text: "No", next: "h2s_neg_urease_pos_citrato_pos_lactosa_pos_mov_neg" }
+                ]
+            },
+            h2s_neg_urease_pos_citrato_pos_lactosa_pos_mov_pos: {
+                question: "¿Rojo de Metilo?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_neg_urease_pos_citrato_pos_lactosa_pos_mov_pos_rdm_pos" },
+                    { text: "No", next: "result_11" }
+                ]
+            },
+            h2s_neg_urease_pos_citrato_pos_lactosa_pos_mov_pos_rdm_pos: {
+                question: "¿Malonato?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_12" },
+                    { text: "No", next: "result_13" }
+                ]
+            },
+            h2s_neg_urease_pos_citrato_pos_lactosa_pos_mov_neg: {
+                question: "¿Indola?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_14" },
+                    { text: "No", next: "result_15" }
+                ]
+            },
+            h2s_neg_urease_pos_citrato_neg: {
+                question: "¿Movimiento?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_16" },
+                    { text: "No", next: "h2s_neg_urease_pos_citrato_neg_mov_neg" }
+                ]
+            },
+            h2s_neg_urease_pos_citrato_neg_mov_neg: {
+                question: "¿Sorbitol?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_17" },
+                    { text: "No", next: "result_18" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_neg: {
+                question: "¿Lactosa?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_19" },
+                    { text: "No", next: "h2s_neg_urease_neg_citrato_neg_lactosa_neg" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_neg_lactosa_neg: {
+                question: "¿Movimiento?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_neg_urease_neg_citrato_neg_lactosa_neg_mov_pos" },
+                    { text: "No", next: "h2s_neg_urease_neg_citrato_neg_lactosa_neg_mov_neg" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_neg_lactosa_neg_mov_pos: {
+                question: "¿Indol?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_20" },
+                    { text: "No", next: "result_21" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_neg_lactosa_neg_mov_neg: {
+                question: "¿Gas de Glucosa?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_22" },
+                    { text: "No", next: "h2s_neg_urease_neg_citrato_neg_lactosa_neg_mov_neg_gdg_neg" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_neg_lactosa_neg_mov_neg_gdg_neg: {
+                question: "¿Malonato?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_23" },
+                    { text: "No", next: "h2s_neg_urease_neg_citrato_neg_lactosa_neg_mov_neg_gdg_neg_malonato_neg" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_neg_lactosa_neg_mov_neg_gdg_neg_malonato_neg: {
+                question: "¿Lisina?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_24" },
+                    { text: "No", next: "result_25" }
+                ]
+            },
+            h2s_neg_urease_neg: {
+                question: "¿Citrato?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_neg_urease_neg_citrato_pos" },
+                    { text: "No", next: "h2s_neg_urease_neg_citrato_neg" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_pos: {
+                question: "¿Lactosa?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_neg_urease_neg_citrato_pos_lactosa_pos" },
+                    { text: "No", next: "h2s_neg_urease_neg_citrato_pos_lactosa_neg" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_pos_lactosa_pos: {
+                question: "¿Indol?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_neg_urease_neg_citrato_pos_lactosa_pos_indol_pos" },
+                    { text: "No", next: "h2s_neg_urease_neg_citrato_pos_lactosa_pos_indol_neg" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_pos_lactosa_pos_indol_pos: {
+                question: "¿Fenilalanina?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "h2s_neg_urease_neg_citrato_pos_lactosa_pos_indol_pos_fenilala_pos" },
+                    { text: "No", next: "result_26" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_pos_lactosa_pos_indol_pos_fenilala_pos: {
+                question: "¿Malonato?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_27" },
+                    { text: "No", next: "result_28" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_pos_lactosa_pos_indol_neg: {
+                question: "¿Sorbitol?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_29" },
+                    { text: "No", next: "result_30" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_pos_lactosa_neg: {
+                question: "¿Indol?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_31" },
+                    { text: "No", next: "h2s_neg_urease_neg_citrato_pos_lactosa_neg_indol_neg" }
+                ]
+            },
+            h2s_neg_urease_neg_citrato_pos_lactosa_neg_indol_neg: {
+                question: "¿Lisina?",
+                type: "question",
+                options: [
+                    { text: "Sí", next: "result_32" },
+                    { text: "No", next: "result_33" }
+                ]
+            },
+            result_1: {
+                type: "result",
+                bacteria: ["Proteus vulgaris"],
+                characteristics: "H2S+, Ureasa+, Indol+"
+            },
+            result_2: {
+                type: "result",
+                bacteria: ["Proteus mirabilis"],
+                characteristics: "H2S+, Ureasa+, Indol-, Fenilalanina+"
+            },
+            result_3: {
+                type: "result",
+                bacteria: ["Citrobacter freundii"],
+                characteristics: "H2S+, Ureasa+, Indol-, Fenilalanina-"
+            },
+            result_4: {
+                type: "result",
+                bacteria: ["Citrobacter freundii"],
+                characteristics: "H2S+, Ureasa-, Citrato+, Lactosa+"
+            },
+            result_5: {
+                type: "result",
+                bacteria: ["Salmonella"],
+                characteristics: "H2S+, Ureasa-, Citrato+, Lactosa-, Lisina+"
+            },
+            result_6: {
+                type: "result",
+                bacteria: ["Citrobacter freundii"],
+                characteristics: "H2S+, Ureasa-, Citrato+, Lactosa-, Lisina-"
+            },
+            result_7: {
+                type: "result",
+                bacteria: ["Yersinia pestis"],
+                characteristics: "H2S+, Ureasa-, Citrato+, Movilidad-"
+            },
+            result_8: {
+                type: "result",
+                bacteria: ["Edwardsiella"],
+                characteristics: "H2S+, Ureasa-, Citrato+, Movilidad+, Indol+"
+            },
+            result_9: {
+                type: "result",
+                bacteria: ["Algunas Salmonellas"],
+                characteristics: "H2S+, Ureasa-, Citrato+, Movilidad+, Indol-"
+            },
+            result_10: {
+                type: "result",
+                bacteria: ["Providencia rettgeri", "Corynebacterium biotipo a", "Corynebacterium biotipo b"],
+                characteristics: "H2S-, Ureasa+, Citrato+, Lactosa-"
+            },
+            result_11: {
+                type: "result",
+                bacteria: ["Enterobacter cloacae"],
+                characteristics: "H2S-, Ureasa+, Citrato+, Lactosa+, Movilidad+, Rojo de Metilo-"
+            },
+            result_12: {
+                type: "result",
+                bacteria: ["Corynebacterium biotipo a"],
+                characteristics: "H2S-, Ureasa+, Citrato+, Lactosa+, Movilidad+, Rojo de Metilo+, Malonato+"
+            },
+            result_13: {
+                type: "result",
+                bacteria: ["Corynebacterium biotipo b"],
+                characteristics: "H2S-, Ureasa+, Citrato+, Lactosa+, Movilidad+, Rojo de Metilo+, Malonato-"
+            },
+            result_14: {
+                type: "result",
+                bacteria: ["Klebsiella oxytoca"],
+                characteristics: "H2S-, Ureasa+, Citrato+, Lactosa+, Movilidad-, Indol+"
+            },
+            result_15: {
+                type: "result",
+                bacteria: ["Corynebacterium biotipo a"],
+                characteristics: "H2S-, Ureasa+, Citrato+, Lactosa+, Movilidad-, Indol-"
+            },
+            result_16: {
+                type: "result",
+                bacteria: ["Morganella morganii"],
+                characteristics: "H2S-, Ureasa+, Citrato-, Movilidad+"
+            },
+            result_17: {
+                type: "result",
+                bacteria: ["Yersinia enterocolitica"],
+                characteristics: "H2S-, Ureasa+, Citrato-, Movilidad-, Sorbitol+"
+            },
+            result_18: {
+                type: "result",
+                bacteria: ["Yersinia pseudotuberculosis"],
+                characteristics: "H2S-, Ureasa+, Citrato-, Movilidad-, Sorbitol-"
+            },
+            result_19: {
+                type: "result",
+                bacteria: ["Escherichia coli"],
+                characteristics: "H2S-, Ureasa-, Citrato-, Lactosa+"
+            },
+            result_20: {
+                type: "result",
+                bacteria: ["Escherichia coli"],
+                characteristics: "H2S-, Ureasa-, Citrato-, Lactosa-, Movilidad+, Indol+"
+            },
+            result_21: {
+                type: "result",
+                bacteria: ["Hafnia alvei"],
+                characteristics: "H2S-, Ureasa-, Citrato-, Lactosa-, Movilidad+, Indol-"
+            },
+            result_22: {
+                type: "result",
+                bacteria: ["Escherichia coli"],
+                characteristics: "H2S-, Ureasa-, Citrato-, Lactosa-, Movilidad-, Gas de Glucosa+"
+            },
+            result_23: {
+                type: "result",
+                bacteria: ["Klebsiella rhinoscleromatis"],
+                characteristics: "H2S-, Ureasa-, Citrato-, Lactosa-, Movilidad-, Gas de Glucosa-, Malonato+"
+            },
+            result_24: {
+                type: "result",
+                bacteria: ["Escherichia coli"],
+                characteristics: "H2S-, Ureasa-, Citrato-, Lactosa-, Movilidad-, Gas de Glucosa-, Malonato-, Lisina+"
+            },
+            result_25: {
+                type: "result",
+                bacteria: ["Shigella"],
+                characteristics: "H2S-, Ureasa-, Citrato-, Lactosa-, Movilidad-, Gas de Glucosa-, Malonato-, Lisina-"
+            },
+            result_26: {
+                type: "result",
+                bacteria: ["P inconstante"],
+                characteristics: "H2S-, Ureasa-, Citrato+, Lactosa+, Indol+, Fenilalanina-"
+            },
+            result_27: {
+                type: "result",
+                bacteria: ["Corynebacterium biotipo b"],
+                characteristics: "H2S-, Ureasa-, Citrato+, Lactosa+, Indol+, Fenilalanina+, Malonato+"
+            },
+            result_28: {
+                type: "result",
+                bacteria: ["Corynebacterium biotipo a"],
+                characteristics: "H2S-, Ureasa-, Citrato+, Lactosa+, Indol+, Fenilalanina+, Malonato-"
+            },
+            result_29: {
+                type: "result",
+                bacteria: ["Serratia marcescens"],
+                characteristics: "H2S-, Ureasa-, Citrato+, Lactosa+, Indol-, Sorbitol+"
+            },
+            result_30: {
+                type: "result",
+                bacteria: ["Hafnia alvei"],
+                characteristics: "H2S-, Ureasa-, Citrato+, Lactosa+, Indol-, Sorbitol-"
+            },
+            result_31: {
+                type: "result",
+                bacteria: ["Corynebacterium biotipo a", "Corynebacterium biotipo b"],
+                characteristics: "H2S-, Ureasa-, Citrato+, Lactosa-, Indol+"
+            },
+            result_32: {
+                type: "result",
+                bacteria: ["Enterobacter aerogenes"],
+                characteristics: "H2S-, Ureasa-, Citrato+, Lactosa-, Indol-, Lisina+"
+            },
+            result_33: {
+                type: "result",
+                bacteria: ["Enterobacter cloacae"],
+                characteristics: "H2S-, Ureasa-, Citrato+, Lactosa-, Indol-, Lisina-"
+            }
+        };
+
+  let currentNode = "start";
+  let history = [];
+
+  const contentArea = document.getElementById("contentArea");
+  const historySection = document.getElementById("historySection");
+  const historyList = document.getElementById("historyList");
+  const progressBar = document.getElementById("progressBar");
+  const progressText = document.getElementById("progressText");
+  const btnRestart = document.getElementById("btnRestart");
+
+  function render() {
+    const node = decisionTree[currentNode];
+    if (!node) {
+      contentArea.innerHTML = "<p>Error: Nodo no encontrado.</p>";
+      return;
+    }
+
+    updateProgress();
+
+    if (node.type === "question") {
+      renderQuestion(node);
+    } else if (node.type === "result") {
+      renderResult(node);
+    }
+    renderHistory();
+  }
+
+  function updateProgress() {
+    const maxSteps = 15;
+    const progressPercent = Math.min((history.length / maxSteps) * 100, 100);
+    progressBar.style.width = progressPercent + "%";
+    progressBar.parentElement.setAttribute('aria-valuenow', history.length);
+    progressText.textContent = `${history.length}/${maxSteps}`;
+  }
+
+  function renderQuestion(node) {
+    let html = `<div>
+      <h2 class="question">${node.question}</h2>
+    </div>
+    <div class="options">`;
+    node.options.forEach((opt, i) => {
+      html += `<button class="option-btn" data-next="${opt.next}" aria-label="Responder: ${opt.text}">${opt.text}</button>`;
+    });
+    html += `</div>`;
+
+    if (history.length > 0) {
+      html += `<button id="btnBack" aria-label="Pregunta anterior">&larr; Volver atrás</button>`;
+    }
+
+    contentArea.innerHTML = html;
+
+    contentArea.querySelectorAll(".option-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        const next = button.getAttribute("data-next");
+        handleAnswer(next);
+      });
+    });
+
+    const btnBack = document.getElementById("btnBack");
+    if (btnBack) {
+      btnBack.addEventListener("click", goBack);
+    }
+  }
+
+  function renderResult(node) {
+    let html = `<div class="result-container" role="region" aria-label="Resultado de identificación">
+      <div class="result-icon" aria-hidden="true">&#10003;</div>
+      <h2 class="result-title">Identificación Completa</h2>
+      <p class="result-subtitle">Basado en las características analizadas</p>
+      <div class="result-list" tabindex="0" aria-label="Microorganismos posibles">
+        <strong>Posible microorganismo:</strong>
+        <ul>
+          ${node.bacteria.map(b => `<li>${b}</li>`).join("")}
+        </ul>
+      </div>
+      <div class="result-characteristics" tabindex="0" aria-label="Características de identificación">
+        <strong>Características:</strong><br />${node.characteristics || "N/A"}
+      </div>
+      <div class="result-actions">
+        <button id="btnRestartResult" class="btn-primary" aria-label="Nueva identificación">Nueva Identificación</button>
+        <button id="btnBackResult" class="btn-secondary" aria-label="Revisar respuestas anteriores">&larr; Revisar Respuestas</button>
+      </div>
+    </div>`;
+
+    contentArea.innerHTML = html;
+
+    document.getElementById("btnRestartResult").addEventListener("click", restart);
+    document.getElementById("btnBackResult").addEventListener("click", goBack);
+  }
+
+  function handleAnswer(nextNode) {
+    history.push({ node: currentNode, answer: nextNode });
+    currentNode = nextNode;
+    render();
+  }
+
+  function goBack() {
+    if (history.length === 0) return;
+    const last = history.pop();
+    currentNode = last.node;
+    render();
+  }
+
+  function restart() {
+    currentNode = "start";
+    history = [];
+    render();
+  }
+
+  function renderHistory() {
+    if (history.length === 0) {
+      historySection.hidden = true;
+      return;
+    }
+    historySection.hidden = false;
+    historyList.innerHTML = "";
+    history.forEach((item, i) => {
+      const q = decisionTree[item.node]?.question || "[Pregunta no encontrada]";
+      const answerText = decisionTree[item.node]?.options?.find(opt => opt.next === item.answer)?.text || "[Respuesta no encontrada]";
+      const div = document.createElement("div");
+      div.className = "history-item";
+      div.innerHTML = `<span class="history-question">P${i + 1}:</span> ${q} <span class="history-answer">→ ${answerText}</span>`;
+      historyList.appendChild(div);
+    });
+  }
+
+  btnRestart.addEventListener("click", restart);
+
+  render();
+</script>
+
+</body>
+</html>
